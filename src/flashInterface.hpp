@@ -130,5 +130,9 @@ class FlashInterface {
 
  private:
 	std::string _spif_filename;
+
+ protected:
+	std::vector<uint8_t> _rx_spi_put;
+	std::vector<uint8_t> _tx_spi_put;
 };
 #endif  // SRC_FLASHINTERFACE_HPP_

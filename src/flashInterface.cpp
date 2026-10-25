@@ -11,7 +11,8 @@
 #include "spiFlash.hpp"
 
 FlashInterface::FlashInterface():_spif_verbose(0), _spif_rd_burst(0),
-	_spif_verify(false), _skip_load_bridge(false)
+	_spif_verify(false), _skip_load_bridge(false),
+	_rx_spi_put(256+3+1, 0), _tx_spi_put(256+3+1, 0)
 {}
 
 FlashInterface::FlashInterface(const std::string &filename, int8_t verbose,
@@ -19,7 +20,8 @@ FlashInterface::FlashInterface(const std::string &filename, int8_t verbose,
 		bool skip_reset):
 	_spif_verbose(verbose), _spif_rd_burst(rd_burst),
 	_spif_verify(verify), _skip_load_bridge(skip_load_bridge),
-	_skip_reset(skip_reset), _spif_filename(filename)
+	_skip_reset(skip_reset), _spif_filename(filename),
+	_rx_spi_put(256+3+1, 0), _tx_spi_put(256+3+1, 0)
 {}
 
 /* spiFlash generic acces */
