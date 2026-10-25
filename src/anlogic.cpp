@@ -197,8 +197,12 @@ int Anlogic::spi_put(uint8_t cmd, const uint8_t *tx, uint8_t *rx, uint32_t len)
 	int xfer_len = len + 1;
 	if (rx)
 		xfer_len++;
-	uint8_t jtx[xfer_len];
-	uint8_t jrx[xfer_len];
+	if (static_cast<size_t>(xfer_len) > _rx_spi_put.size()) {
+		_rx_spi_put.resize(xfer_len);
+		_tx_spi_put.resize(xfer_len);
+	}
+	uint8_t *jtx = _tx_spi_put.data();
+	uint8_t *jrx = _rx_spi_put.data();
 
 	jtx[0] = AnlogicBitParser::reverseByte(cmd);
 	if (tx != NULL) {
@@ -223,8 +227,12 @@ int Anlogic::spi_put(const uint8_t *tx, uint8_t *rx, uint32_t len)
 	int xfer_len = len;
 	if (rx)
 		xfer_len++;
-	uint8_t jtx[xfer_len];
-	uint8_t jrx[xfer_len];
+	if (static_cast<size_t>(xfer_len) > _rx_spi_put.size()) {
+		_rx_spi_put.resize(xfer_len);
+		_tx_spi_put.resize(xfer_len);
+	}
+	uint8_t *jtx = _tx_spi_put.data();
+	uint8_t *jrx = _rx_spi_put.data();
 
 	if (tx != NULL) {
 		for (uint32_t i = 0; i < len; i++)

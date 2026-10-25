@@ -247,8 +247,12 @@ int FtdiSpi::ft2232_spi_wr_and_rd(//struct ftdi_spi *spi,
 int FtdiSpi::spi_put(uint8_t cmd, const uint8_t *tx, uint8_t *rx, uint32_t len)
 {
 	uint32_t xfer_len = len + 1;
-	uint8_t jtx[xfer_len];
-	uint8_t jrx[xfer_len];
+	if (xfer_len > _rx_spi_put.size()) {
+		_rx_spi_put.resize(xfer_len);
+		_tx_spi_put.resize(xfer_len);
+	}
+	uint8_t *jtx = _tx_spi_put.data();
+	uint8_t *jrx = _rx_spi_put.data();
 
 	jtx[0] = cmd;
 	if (tx != NULL)

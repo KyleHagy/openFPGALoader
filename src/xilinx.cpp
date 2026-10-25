@@ -2286,10 +2286,14 @@ int Xilinx::spi_put(uint8_t cmd,
 		return spi_put_v2(cmd, tx, rx, len);
 
 	int xfer_len = len + 1 + ((rx == NULL) ? 0 : 1);
-	uint8_t jtx[xfer_len];
+	if (static_cast<size_t>(xfer_len) > _rx_spi_put.size()) {
+		_rx_spi_put.resize(xfer_len);
+		_tx_spi_put.resize(xfer_len);
+	}
+	uint8_t *jtx = _tx_spi_put.data();
+	uint8_t *jrx = _rx_spi_put.data();
 	jtx[0] = McsParser::reverseByte(cmd);
 	/* uint8_t jtx[xfer_len] = {McsParser::reverseByte(cmd)}; */
-	uint8_t jrx[xfer_len];
 	if (tx != NULL) {
 		for (uint32_t i=0; i < len; i++)
 			jtx[i+1] = McsParser::reverseByte(tx[i]);
@@ -2312,8 +2316,12 @@ int Xilinx::spi_put(uint8_t cmd,
 int Xilinx::spi_put(const uint8_t *tx, uint8_t *rx, uint32_t len)
 {
 	int xfer_len = len + ((rx == NULL) ? 0 : 1);
-	uint8_t jtx[xfer_len];
-	uint8_t jrx[xfer_len];
+	if (static_cast<size_t>(xfer_len) > _rx_spi_put.size()) {
+		_rx_spi_put.resize(xfer_len);
+		_tx_spi_put.resize(xfer_len);
+	}
+	uint8_t *jtx = _tx_spi_put.data();
+	uint8_t *jrx = _rx_spi_put.data();
 	if (tx != NULL) {
 		for (uint32_t i=0; i < len; i++)
 			jtx[i] = McsParser::reverseByte(tx[i]);
@@ -2392,8 +2400,12 @@ int Xilinx::spi_put_v2(uint8_t cmd, const uint8_t *tx, uint8_t *rx,
 
 	const uint32_t xfer_bit_len = (kPktLen - 1) * 8 + (rx ? 8 : 1);
 
-	uint8_t jrx[kPktLen];
-	uint8_t pkt[kPktLen];
+	if (kPktLen > _rx_spi_put.size()) {
+		_rx_spi_put.resize(kPktLen);
+		_tx_spi_put.resize(kPktLen);
+	}
+	uint8_t *pkt = _tx_spi_put.data();
+	uint8_t *jrx = _rx_spi_put.data();
 	uint32_t idx = 0;
 
 	pkt[idx++] = ((0x1f & real_len) << 3) | ((0x03 & mode) << 1) | 1;

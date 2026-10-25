@@ -1775,8 +1775,12 @@ int Lattice::spi_put(uint8_t cmd, const uint8_t *tx, uint8_t *rx, uint32_t len)
 {
 	const uint32_t xfer_len = len + 1 + ((rx != NULL) && ((_fpga_family == ECP3_FAMILY)) ? 1 : 0);
 	const uint32_t xfer_bit_len = (len + 1) * 8 + ((rx != NULL) && ((_fpga_family == ECP3_FAMILY)) ? 1 : 0);
-	uint8_t jtx[xfer_len];
-	uint8_t jrx[xfer_len];
+	if (xfer_len > _rx_spi_put.size()) {
+		_rx_spi_put.resize(xfer_len);
+		_tx_spi_put.resize(xfer_len);
+	}
+	uint8_t *jtx = _tx_spi_put.data();
+	uint8_t *jrx = _rx_spi_put.data();
 
 	memset(jrx, 0, xfer_len);
 	memset(jtx, 0, xfer_len);
@@ -1812,8 +1816,12 @@ int Lattice::spi_put(const uint8_t *tx, uint8_t *rx, uint32_t len)
 {
 	if (len == 0)
 		return 0;
-	uint8_t jtx[len];
-	uint8_t jrx[len];
+	if (len > _rx_spi_put.size()) {
+		_rx_spi_put.resize(len);
+		_tx_spi_put.resize(len);
+	}
+	uint8_t *jtx = _tx_spi_put.data();
+	uint8_t *jrx = _rx_spi_put.data();
 
 	memset(jrx, 0, len);
 
